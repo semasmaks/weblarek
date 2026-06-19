@@ -52,7 +52,10 @@ export function cloneTemplate<T extends HTMLElement>(query: string | HTMLTemplat
     return template.content.firstElementChild.cloneNode(true) as T;
 }
 
-export function bem(block: string, element?: string, modifier?: string): { name: string, class: string } {
+export function bem(block: string, element?: string, modifier?: string): {
+    name: string,
+    class: string
+} {
     let name = block;
     if (element) name += `__${element}`;
     if (modifier) name += `_${modifier}`;
@@ -97,7 +100,7 @@ export function getElementData<T extends Record<string, unknown>>(el: HTMLElemen
  */
 export function isPlainObject(obj: unknown): obj is object {
     const prototype = Object.getPrototypeOf(obj);
-    return  prototype === Object.getPrototypeOf({}) ||
+    return prototype === Object.getPrototypeOf({}) ||
         prototype === null;
 }
 
@@ -112,7 +115,7 @@ export function isBoolean(v: unknown): v is boolean {
  */
 export function createElement<
     T extends HTMLElement
-    >(
+>(
     tagName: keyof HTMLElementTagNameMap,
     props?: Partial<Record<keyof T, string | boolean | object>>,
     children?: HTMLElement | HTMLElement []

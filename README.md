@@ -1,5 +1,7 @@
 # Проектная работа "Веб-ларек"
 
+##### https://github.com/semasmaks/weblarek
+
 Стек: HTML, SCSS, TS, Vite
 
 Структура проекта:
@@ -98,3 +100,70 @@ Presenter - презентер содержит основную логику п
 `emit<T extends object>(event: string, data?: T): void` - инициализация события. При вызове события в метод передается название события и объект с данными, который будет использован как аргумент для вызова обработчика.  
 `trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие с передачей в него данных из второго параметра.
 
+#### Класс Products
+Каталог товаров
+
+Конструктор отсутствует
+
+Методы класса:
+
+`setProducts(products: IProduct[]): void` - принимает массив объектов и сохраняет их у себя в памяти
+`setSelectedProduct(selectedProduct: IProduct): void` - принимает объект товара и сохраняет его у себя в памяти
+`getProductById(id: string): IProduct` - принимает строковый _id_ товара, возращает объект товара, если он найден 
+`getSelectedProduct(): IProduct` - возращает объект товара, если до этого он был выбран
+`getAllProducts(): IProduct[]` - возращает массив всех товаров
+
+#### Класс Customer
+Информация о покупателе
+
+Конструктор отсутствует
+
+Методы класса:
+
+`setPayment(payment: TPayment): void`, 
+`setEmail(email: string): void`, 
+`setPhone(phone: string): void`, 
+`setAddress(address: string): void` - принимают строковые значения способа&nbsp;оплаты/email/номер&nbsp;телефона/адрес соответственно и сохраняют их в памяти
+
+`getPayment(): TPayment`, 
+`getEmail(): string`, 
+`getPhone(): string`, 
+`getAddress(): string` - возращают строковое значение запрошенного поля
+
+`getFullData(): IBuyer` - возращает объект с данными о покупателе
+
+`resetData(): void` - очищает все поля с данными о покупателе
+
+`validate(): Record<string, string> | null` - возращает объект с ошибками, если они есть, либо `null`, если всё хорошо
+
+#### Класс Cart
+Корзина покупок
+
+Конструктор отсутствует
+
+Методы класса:
+
+`addItem(item: IProduct): void` - добавляет товар в корзину
+
+`removeItem(item: IProduct): void` - удаляет товар из корзины
+
+`clear(): void` - очищает корзину (удаляет все товары)
+
+`getItems(): IProduct[]` - возвращает массив товаров в корзине
+
+`getTotalPrice(): number` - возвращает общую стоимость всех товаров в корзине
+
+`getItemsLength(): number` - возвращает количество товаров в корзине
+
+`hasItem(id: string): boolean` - проверяет наличие товара в корзине по его идентификатору, возвращает `true`, если товар найден, иначе `false`
+
+#### Класс AppApi
+Слой коммуникации с сервером
+
+Конструктор:
+`constructor(api: IApi)` - В конструктор передаётся экземпляр класса _Api_
+
+Методы класса:
+`getProducts(): Promise<IProductsResponse>` - не принимает аргументы, возращает ответ сервера
+
+`postOrder(order: IOrderData): Promise<IOrderResponse>` - принимает объект данных, необходимых для размещения заказа, возращает ответ сервера
