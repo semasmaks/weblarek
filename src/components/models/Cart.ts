@@ -1,18 +1,21 @@
 import {IProduct} from "../../types";
 
 export class Cart {
-    items: IProduct[] = []
+    private items: IProduct[] = []
 
     getItems(): IProduct[] {
         return this.items;
     }
 
-    addItem(item: IProduct): void {
-        this.items.push(item);
+    addItem(item: IProduct | null): void {
+        if (item) this.items.push(item);
     }
 
-    removeItem(item: IProduct): void {
-        this.items.splice(this.items.indexOf(item), 1);
+    removeItem(item: IProduct | null): void {
+        if (item) {
+            const index = this.items.indexOf(item);
+            if (index !== -1) this.items.splice(index, 1);
+        }
     }
 
     clear(): void {

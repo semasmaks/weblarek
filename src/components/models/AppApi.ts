@@ -1,4 +1,4 @@
-import {IApi, IProductsResponse, IOrderData, IOrderResponse} from "../../types";
+import {IApi, IOrderData, IOrderResponse, IProductsResponse} from "../../types";
 
 export class AppApi {
     private api: IApi;
@@ -8,10 +8,10 @@ export class AppApi {
     }
 
     getProducts(): Promise<IProductsResponse> {
-        return this.api.get('/product/');
+        return this.api.get<IProductsResponse>('/product/');
     }
 
     postOrder(order: IOrderData): Promise<IOrderResponse> {
-        return this.api.post('/order/', order)
+        return this.api.post<IOrderResponse>('/order/', order)
     }
 }
