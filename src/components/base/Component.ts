@@ -8,6 +8,12 @@ export abstract class Component<T> {
 
     // Инструментарий для работы с DOM в дочерних компонентах
 
+    // Вернуть корневой DOM-элемент
+    render(data?: Partial<T>): HTMLElement {
+        Object.assign(this as object, data ?? {});
+        return this.container;
+    }
+
     // Установить изображение с альтернативным текстом
     protected setImage(element: HTMLImageElement, src: string, alt?: string) {
         if (element) {
@@ -16,11 +22,5 @@ export abstract class Component<T> {
                 element.alt = alt;
             }
         }
-    }
-
-    // Вернуть корневой DOM-элемент
-    render(data?: Partial<T>): HTMLElement {
-        Object.assign(this as object, data ?? {});
-        return this.container;
     }
 }

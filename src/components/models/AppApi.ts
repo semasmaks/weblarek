@@ -1,4 +1,4 @@
-import {IApi, IOrderData, IOrderResponse, IProductsResponse} from "../../types";
+import {IApi, IOrderData, IOrderResponse, IProductsResponse} from '../../types';
 
 export class AppApi {
     private api: IApi;

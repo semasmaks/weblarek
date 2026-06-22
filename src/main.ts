@@ -1,11 +1,11 @@
 import './scss/styles.scss';
-import {Cart} from "./components/models/Cart.ts";
-import {Products} from "./components/models/Products.ts";
-import {Customer} from "./components/models/Customer.ts";
-import {Api} from "./components/base/Api.ts";
-import {API_URL} from "./utils/constants.ts";
-import {AppApi} from "./components/models/AppApi.ts";
-import {apiProducts} from "./utils/data.ts"; // Моковые данные
+import {Cart} from './components/models/Cart.ts';
+import {Products} from './components/models/Products.ts';
+import {Customer} from './components/models/Customer.ts';
+import {Api} from './components/base/Api.ts';
+import {API_URL} from './utils/constants.ts';
+import {AppApi} from './components/models/AppApi.ts';
+import {apiProducts} from './utils/data.ts'; // Моковые данные
 
 
 {

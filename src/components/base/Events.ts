@@ -9,7 +9,9 @@ type EmitterEvent = {
 
 export interface IEvents {
     on<T extends object>(event: EventName, callback: (data: T) => void): void;
+
     emit<T extends object>(event: string, data?: T): void;
+
     trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
 }
 
@@ -54,7 +56,7 @@ export class EventEmitter implements IEvents {
         this._events.forEach((subscribers, name) => {
             if (name === '*') subscribers.forEach(callback => callback({
                 eventName,
-                data
+                data,
             }));
             if (name instanceof RegExp && name.test(eventName) || name === eventName) {
                 subscribers.forEach(callback => callback(data));
@@ -66,7 +68,7 @@ export class EventEmitter implements IEvents {
      * Слушать все события
      */
     onAll(callback: (event: EmitterEvent) => void) {
-        this.on("*", callback);
+        this.on('*', callback);
     }
 
     /**
@@ -83,7 +85,7 @@ export class EventEmitter implements IEvents {
         return (event: object = {}) => {
             this.emit(eventName, {
                 ...(event || {}),
-                ...(context || {})
+                ...(context || {}),
             });
         };
     }
