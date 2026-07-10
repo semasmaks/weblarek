@@ -43,3 +43,9 @@ export interface IOrderResponse {
     id: string;
     total: number;
 }
+
+//Типы компонентов
+export interface IHeader {
+}
+
+export interface IModal {}
