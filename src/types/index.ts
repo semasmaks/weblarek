@@ -24,6 +24,13 @@ export interface IBuyer {
     address: string;
 }
 
+export interface IErrorsValidate {
+    payment?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+}
+
 
 // Ответ сервера при получении списка товаров
 export interface IProductsResponse {
@@ -48,4 +55,25 @@ export interface IOrderResponse {
 export interface IHeader {
 }
 
-export interface IModal {}
+export interface IModal {
+}
+
+export interface IEmitResponse<T extends object> {
+    e: Event;
+    data: T;
+}
+
+export interface IResponseDataId {
+    id: string;
+}
+
+
+export interface IResponseDataOrder<T> {
+    address: string;
+    payment?: T;
+}
+
+export interface IResponseDataContacts {
+    phone: string;
+    email: string;
+}

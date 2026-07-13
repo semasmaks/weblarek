@@ -1,73 +1,143 @@
 import './scss/styles.scss';
-import {Cart} from './components/models/Cart.ts';
 import {Products} from './components/models/Products.ts';
-import {Customer} from './components/models/Customer.ts';
+import {cloneTemplate, ensureElement} from './utils/utils.ts';
+import {ModalView} from './components/view/ModalView.ts';
+import {CatalogView} from './components/view/CatalogView.ts';
+import {CardPreview} from './components/view/CardPreview.ts';
+import {AppApi} from './components/models/AppApi.ts';
 import {Api} from './components/base/Api.ts';
 import {API_URL} from './utils/constants.ts';
-import {AppApi} from './components/models/AppApi.ts';
-import {apiProducts} from './utils/data.ts';
-import {HeaderView} from './components/base/HeaderView.ts';
-import {cloneTemplate, ensureElement} from './utils/utils.ts';
-import {ModalView} from './components/base/ModalView.ts'; // Моковые данные
+import {EventEmitter} from './components/base/Events.ts';
+import {Basket} from './components/models/Basket.ts';
+import {Customer} from './components/models/Customer.ts';
+import {HeaderView} from './components/view/HeaderView.ts';
+import {BasketModalView} from './components/view/BasketModalView.ts';
+import {
+    IEmitResponse,
+    IOrderResponse,
+    IProductsResponse,
+    IResponseDataContacts,
+    IResponseDataId,
+    IResponseDataOrder,
+    TPayment,
+} from './types';
+import {CatalogPresenter} from './components/presenters/CatalogPresenter.ts';
+import {
+    CardPreviewPresenter,
+} from './components/presenters/CardPreviewPresenter.ts';
+import {BasketPresenter} from './components/presenters/BasketPresenter.ts';
+import {HeaderPresenter} from './components/presenters/HeaderPresenter.ts';
+import {OrderModalView} from './components/view/OrderModalView.ts';
+import {OrderPresenter} from './components/presenters/OrderPresenter.ts';
+import {ContactsView} from './components/view/ContactsView.ts';
+import {ContactsPresenter} from './components/presenters/ContactsPresenter.ts';
+import {ApiPresenter} from './components/presenters/ApiPresenter.ts';
+import {SuccessView} from './components/view/SuccesView.ts';
+import {SuccessPresenter} from './components/presenters/SuccessPresenter.ts';
 
+// События
+const events = new EventEmitter()
 
-//{
-//     // Проверка классов и их методов
-// // Инициализация
-//     const catalogApi = new Products();
-//     const catalogMock = new Products();
-//     const cart = new Cart();
-//     const customer = new Customer();
-//     const api = new Api(API_URL)
-//     const appApi = new AppApi(api);
-//
-//     appApi.getProducts().then(res => {
-//         console.log('Проверка данных, полученных с сервера');
-//         catalogApi.setItems(res.items)
-//         console.log(catalogApi.getAllItems());
-//     }).catch(err => console.log(`произошла ошибка: ${err}`));
-//
-// // Проверка класса на моковых данных
-//     catalogMock.setItems(apiProducts.items)
-//     console.log('Проверка класса на моковых данных');
-//     console.log(catalogMock.getAllItems());
-//     const searchedProductMok = catalogMock.getItemById('854cef69-976d-4c2a-a18c-2aa45046c390')
-//     console.log('Поиск по id:');
-//     console.log(searchedProductMok);
-//     console.log(catalogMock.getSelectedItem())
-//     catalogMock.setSelectedItems(searchedProductMok)
-//     console.log('Выбранный продукт');
-//     console.log(catalogMock.getSelectedItem())
-//
-// // Корзина
-//     cart.addItem(catalogMock.getItemById('854cef69-976d-4c2a-a18c-2aa45046c390'))
-//     cart.addItem(catalogMock.getItemById('412bcf81-7e75-4e70-bdb9-d3c73c9803b7'))
-//     console.log('Товары в корзине');
-//     console.log(cart.getItems())
-//     console.log('Кол-во товаров в корзине: ' + cart.getItemsLength())
-//     console.log('Сумма: ' + cart.getTotalPrice())
-//     console.log(('Проверка наличия товара в корзине: ' + cart.hasItem('412bcf81-7e75-4e70-bdb9-d3c73c9803b7')))
-//     cart.removeItem(catalogMock.getItemById('412bcf81-7e75-4e70-bdb9-d3c73c9803b7'))
-//     console.log(('Проверка наличия товара в корзине: ' + cart.hasItem('412bcf81-7e75-4e70-bdb9-d3c73c9803b7')))
-//     cart.clear()
-//     console.log('Очистка корзины');
-//     console.log(cart.getItems());
-//
-// // Покупатель
-//     customer.setAddress('ул.Пушкина')
-//     customer.setEmail('example@gmail.com')
-//     customer.setPhone('0123456789');
-//     customer.setPayment('cash')
-//     console.log('Данные покупателя');
-//     console.log(customer.getData());
-//     console.log(customer.validate());
-//     customer.resetData()
-//     console.log(customer.getData());
-//     console.log(customer.validate());
-// }
+// Темплеты
+const basketContainerTemplate = cloneTemplate('#basket') as HTMLTemplateElement
+const basketItemTemplate = cloneTemplate('#card-basket') as HTMLTemplateElement
+const catalogItemTemplate = cloneTemplate('#card-catalog') as HTMLTemplateElement
+const cardPreviewTemplate = cloneTemplate('#card-preview') as HTMLTemplateElement
+const orderTemplate = cloneTemplate('#order') as HTMLTemplateElement
+const contactsTemplate = cloneTemplate('#contacts') as HTMLTemplateElement
+const successTemplate = cloneTemplate('#success') as HTMLTemplateElement
 
+// Элементы
 const headerElement = ensureElement('.header')
-const headerView = new HeaderView(headerElement)
+const catalogElement = ensureElement('.gallery')
+const modalElement = ensureElement('#modal-container')
 
-const modalElement = ensureElement('.modal')
-const modalView = new ModalView(modalElement)
+// Модели
+const catalog = new Products()
+const basket = new Basket()
+const customer = new Customer()
+
+// API
+const api = new Api(API_URL);
+const appApi = new AppApi(api)
+const apiPresenter = new ApiPresenter(appApi, events, basket, customer)
+
+// Представления
+const catalogView = new CatalogView(catalogElement, events, catalogItemTemplate)
+const headerView = new HeaderView(headerElement, events)
+
+// Модалки
+const modalView = new ModalView(modalElement, events) // Создаём чтобы повесить обработчик закрытия на 1 элемент, а не на 3
+const basketModalView = new BasketModalView(modalElement, events, basketContainerTemplate, basketItemTemplate)
+const itemPreviewModal = new CardPreview(modalElement, events, cardPreviewTemplate)
+const orderModal = new OrderModalView(modalElement, events, orderTemplate)
+const contactsModal = new ContactsView(modalElement, events, contactsTemplate)
+const successModal = new SuccessView(modalElement, events, successTemplate)
+
+// Презентеры
+const catalogPresenter = new CatalogPresenter(catalog, catalogView);
+const cardPreviewPresenter = new CardPreviewPresenter(catalog, basket, itemPreviewModal)
+const basketPresenter = new BasketPresenter(basket, basketModalView)
+const headerPresenter = new HeaderPresenter(basket, headerView)
+const orderPresenter = new OrderPresenter(customer, orderModal)
+const contactsPresenter = new ContactsPresenter(customer, contactsModal)
+const successPresenter = new SuccessPresenter(basket, events, successModal)
+
+// Слушатели
+// При успешном получении продуктов
+events.on('catalog:getItems', (res: IProductsResponse) => {
+    catalogPresenter.renderCatalog(res.items)
+})
+// При клике на карточку
+events.on('catalog:click', (res: IEmitResponse<IResponseDataId>) => {
+    cardPreviewPresenter.openPreview(res)
+})
+// Закрытие всех модальных окон и сброс выбранной карточки
+events.on('modal:close', () => {
+    modalView.hideModal();
+    cardPreviewPresenter.onClose()
+})
+// При нажатии на кнопку "Купить"/"Удалить из корзины" в модальном окне
+events.on('basket:upd', (res: IEmitResponse<IResponseDataId>) => {
+    cardPreviewPresenter.onAction(res);
+    basketPresenter.updateBasket()
+    headerPresenter.updateBasketCounter()
+})
+// При очистке корзины
+events.on('basket:clear', () => {
+    basketPresenter.updateBasket()
+    headerPresenter.updateBasketCounter()
+})
+// При нажатии на открытие корзины
+events.on('basket:open', () => {
+    basketPresenter.showBasket()
+})
+// При вводе адреса в поле заказа или выборе способа оплаты
+events.on('order:input', (res: IEmitResponse<IResponseDataOrder<TPayment>>) => {
+    orderPresenter.onInput(res)
+})
+// При нажатии на "Оформить" в корзине
+events.on('order:open', () => {
+    orderPresenter.showModal()
+})
+// При нажатии на "Далее" в форме заказа
+events.on('order:submit', () => {
+    contactsPresenter.showModal()
+})
+// При вводе в любое поле в форме контактов
+events.on('contacts:input', (res: IEmitResponse<IResponseDataContacts>) => {
+    contactsPresenter.onInput(res)
+})
+// При нажатии на "Оформить" в форме контактов
+events.on('contacts:submit', () => {
+    apiPresenter.postOrder()
+})
+// При Успешном ответе от сервера
+events.on('api:responseOk', (res: IOrderResponse) => {
+    successPresenter.onResponseOK(res)
+})
+
+// Старт работы приложения
+document.addEventListener('DOMContentLoaded', async () => {
+    apiPresenter.getItems()
+});
