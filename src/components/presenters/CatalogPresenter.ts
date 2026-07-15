@@ -11,6 +11,4 @@ export class CatalogPresenter {
         this.model.setItems(items)
         this.view.addCards(this.model.getAllItems());
     }
-
-
 }

@@ -56,6 +56,5 @@ export interface IEmitDefault<T extends object> {
 }
 
 export type TEmitProduct = IEmitDefault<IProduct>
-
 export type TEmitPartialUserData = IEmitDefault<Partial<ICustomer>>
 export type TEmitUserData = IEmitDefault<ICustomer>

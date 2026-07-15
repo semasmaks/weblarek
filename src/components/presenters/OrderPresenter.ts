@@ -29,6 +29,4 @@ export class OrderPresenter {
             this.view.showError(errors.payment)
         } else this.view.showError('')
     }
-
-
 }
