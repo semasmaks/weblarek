@@ -1,7 +1,7 @@
 import {ModalView} from './ModalView.ts';
 import {EventEmitter} from '../base/Events.ts';
 import {ensureElement} from '../../utils/utils.ts';
-import {IEmitResponse, IResponseDataContacts} from '../../types';
+import {TEmitPartialUserData} from '../../types';
 
 export class ContactsView extends ModalView {
     private readonly content: HTMLElement;
@@ -23,8 +23,8 @@ export class ContactsView extends ModalView {
 
         this.phoneInput.addEventListener('input', (e: Event) => {
             e.preventDefault()
-            this.events.emit<IEmitResponse<IResponseDataContacts>>('contacts:input', {
-                e: e, data: {
+            this.events.emit<TEmitPartialUserData>('contacts:input', {
+                data: {
                     phone: this.phoneInput.value,
                     email: this.emailInput.value,
                 },
@@ -32,8 +32,8 @@ export class ContactsView extends ModalView {
         })
         this.emailInput.addEventListener('input', (e: Event) => {
             e.preventDefault()
-            this.events.emit<IEmitResponse<IResponseDataContacts>>('contacts:input', {
-                e: e, data: {
+            this.events.emit<TEmitPartialUserData>('contacts:input', {
+                data: {
                     phone: this.phoneInput.value,
                     email: this.emailInput.value,
                 },

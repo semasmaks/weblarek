@@ -13,13 +13,11 @@ import {Customer} from './components/models/Customer.ts';
 import {HeaderView} from './components/view/HeaderView.ts';
 import {BasketModalView} from './components/view/BasketModalView.ts';
 import {
-    IEmitResponse,
-    IOrderResponse,
-    IProductsResponse,
-    IResponseDataContacts,
-    IResponseDataId,
-    IResponseDataOrder,
-    TPayment,
+    IEmitDefault,
+    IFetchItemsResponse,
+    IPostOrderResponse,
+    TEmitProduct,
+    TEmitPartialUserData, TEmitUserData,
 } from './types';
 import {CatalogPresenter} from './components/presenters/CatalogPresenter.ts';
 import {
@@ -85,11 +83,11 @@ const successPresenter = new SuccessPresenter(basket, events, successModal)
 
 // Слушатели
 // При успешном получении продуктов
-events.on('catalog:getItems', (res: IProductsResponse) => {
+events.on('appApi:getItems', (res: IFetchItemsResponse) => {
     catalogPresenter.renderCatalog(res.items)
 })
 // При клике на карточку
-events.on('catalog:click', (res: IEmitResponse<IResponseDataId>) => {
+events.on('catalogCard:click', (res: TEmitProduct) => {
     cardPreviewPresenter.openPreview(res)
 })
 // Закрытие всех модальных окон и сброс выбранной карточки
@@ -98,22 +96,26 @@ events.on('modal:close', () => {
     cardPreviewPresenter.onClose()
 })
 // При нажатии на кнопку "Купить"/"Удалить из корзины" в модальном окне
-events.on('basket:upd', (res: IEmitResponse<IResponseDataId>) => {
-    cardPreviewPresenter.onAction(res);
+events.on('addToCardBtn:click', (res: TEmitProduct) => {
+    cardPreviewPresenter.onActionBtnClick(res);
     basketPresenter.updateBasket()
     headerPresenter.updateBasketCounter()
 })
 // При очистке корзины
 events.on('basket:clear', () => {
-    basketPresenter.updateBasket()
     headerPresenter.updateBasketCounter()
 })
 // При нажатии на открытие корзины
-events.on('basket:open', () => {
+events.on('basketModal:open', () => {
     basketPresenter.showBasket()
 })
+// При нажатии на "Удалить" в корзине
+events.on('basketDellBtn:click', (res: TEmitProduct) => {
+    basketPresenter.deleteItem(res)
+    headerPresenter.updateBasketCounter()
+})
 // При вводе адреса в поле заказа или выборе способа оплаты
-events.on('order:input', (res: IEmitResponse<IResponseDataOrder<TPayment>>) => {
+events.on('order:input', (res: TEmitPartialUserData) => {
     orderPresenter.onInput(res)
 })
 // При нажатии на "Оформить" в корзине
@@ -125,7 +127,7 @@ events.on('order:submit', () => {
     contactsPresenter.showModal()
 })
 // При вводе в любое поле в форме контактов
-events.on('contacts:input', (res: IEmitResponse<IResponseDataContacts>) => {
+events.on('contacts:input', (res: TEmitUserData) => {
     contactsPresenter.onInput(res)
 })
 // При нажатии на "Оформить" в форме контактов
@@ -133,8 +135,8 @@ events.on('contacts:submit', () => {
     apiPresenter.postOrder()
 })
 // При Успешном ответе от сервера
-events.on('api:responseOk', (res: IOrderResponse) => {
-    successPresenter.onResponseOK(res)
+events.on('appApi:orderPosted', (res: IEmitDefault<IPostOrderResponse>) => {
+    successPresenter.showSuccessWindow(res)
 })
 
 // Старт работы приложения

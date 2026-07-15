@@ -1,20 +1,21 @@
 import {Component} from '../base/Component.ts';
 import {IHeader} from '../../types';
 import {EventEmitter} from '../base/Events.ts';
+import {ensureElement} from '../../utils/utils.ts';
 
 export class HeaderView extends Component<IHeader> {
-    basketCounterElement: HTMLElement | null;
-    basketButtonElement: HTMLElement | null;
-    events: EventEmitter
+    private readonly basketCounterElement: HTMLElement;
+    private basketButtonElement: HTMLElement;
+    private events: EventEmitter
 
     constructor(container: HTMLElement, events: EventEmitter) {
         super(container);
-        this.basketCounterElement = container.querySelector('.header__basket-counter');
-        this.basketButtonElement = container.querySelector('.header__basket');
+        this.basketCounterElement = ensureElement('.header__basket-counter', this.container);
+        this.basketButtonElement = ensureElement('.header__basket', this.container);
         this.events = events;
 
-        this.basketButtonElement?.addEventListener('click', () => {
-            this.events.emit('basket:open')
+        this.basketButtonElement.addEventListener('click', () => {
+            this.events.emit('basketModal:open')
         })
     }
 

@@ -3,10 +3,10 @@ import {Basket} from '../models/Basket.ts';
 import {Customer} from '../models/Customer.ts';
 import {EventEmitter} from '../base/Events.ts';
 import {
-    IBuyer,
+    ICustomer,
     IOrderData,
-    IOrderResponse,
-    IProductsResponse,
+    IPostOrderResponse,
+    IFetchItemsResponse, IEmitDefault,
 } from '../../types';
 
 export class ApiPresenter {
@@ -17,25 +17,24 @@ export class ApiPresenter {
     }
 
     async getItems(): Promise<void> {
-        const response: IProductsResponse = await this.api.getProducts();
-        this.events.emit<IProductsResponse>('catalog:getItems', {
-            items: response.items,
-            total: response.total,
+        const response: IFetchItemsResponse = await this.api.getProducts();
+        this.events.emit<IFetchItemsResponse>('appApi:getItems', {
+            ...response
         });
     }
 
     async postOrder(): Promise<void> {
-        const customerInfo: IBuyer = this.customer.getData();
+        const customerInfo: ICustomer = this.customer.getData();
         const order: IOrderData = {
             ...customerInfo,
             items: this.basket.getItems().map(item => item.id),
             total: this.basket.getTotalPrice(),
         }
         try {
-            const response: IOrderResponse = await this.api.postOrder(order)
-            if (response) this.events.emit('api:responseOk', response)
-        } catch (e) {
-            console.log(e);
+            const response: IPostOrderResponse = await this.api.postOrder(order)
+            if (response) this.events.emit<IEmitDefault<IPostOrderResponse>>('appApi:orderPosted', {data: response})
+        } catch (err) {
+            console.log(err);
         }
     }
 }

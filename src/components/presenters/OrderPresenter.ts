@@ -1,6 +1,6 @@
 import {Customer} from '../models/Customer.ts';
 import {OrderModalView} from '../view/OrderModalView.ts';
-import {IEmitResponse, IResponseDataOrder, TPayment} from '../../types';
+import {TEmitPartialUserData} from '../../types';
 
 export class OrderPresenter {
     constructor(private customer: Customer,
@@ -11,7 +11,7 @@ export class OrderPresenter {
         this.view.showModal()
     }
 
-    onInput(res: IEmitResponse<IResponseDataOrder<TPayment>>) {
+    onInput(res: TEmitPartialUserData) {
         if (res.data.payment) {
             if (res.data.payment === this.customer.getData().payment) {
                 this.customer.setPayment('');
@@ -21,7 +21,7 @@ export class OrderPresenter {
                 this.view.setPayment(res.data.payment);
             }
         }
-        this.customer.setAddress(res.data.address)
+        if (res.data.address) this.customer.setAddress(res.data.address)
         const errors = this.customer.validate()
         if (errors.address) {
             this.view.showError(errors.address)

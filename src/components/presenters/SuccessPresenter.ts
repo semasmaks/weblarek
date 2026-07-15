@@ -1,5 +1,5 @@
 import {Basket} from '../models/Basket.ts';
-import {IOrderResponse} from '../../types';
+import {IEmitDefault, IPostOrderResponse} from '../../types';
 import {SuccessView} from '../view/SuccesView.ts';
 import {EventEmitter} from '../base/Events.ts';
 
@@ -9,8 +9,8 @@ export class SuccessPresenter {
                 private view: SuccessView) {
     }
 
-    onResponseOK(res: IOrderResponse) {
-        this.view.setStatus(res)
+    showSuccessWindow(res: IEmitDefault<IPostOrderResponse>) {
+        this.view.setStatus(res.data)
         this.view.showModal()
         this.basket.clear()
         this.events.emit('basket:clear')

@@ -1,6 +1,6 @@
 import {Customer} from '../models/Customer.ts';
 import {ContactsView} from '../view/ContactsView.ts';
-import {IEmitResponse, IResponseDataContacts} from '../../types';
+import {TEmitUserData} from '../../types';
 
 export class ContactsPresenter {
     constructor(private customer: Customer,
@@ -11,7 +11,7 @@ export class ContactsPresenter {
         this.view.showModal()
     }
 
-    onInput(res: IEmitResponse<IResponseDataContacts>) {
+    onInput(res: TEmitUserData) {
         this.customer.setPhone(res.data.phone)
         this.customer.setEmail(res.data.email)
         const errors = this.customer.validate()

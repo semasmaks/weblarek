@@ -2,7 +2,6 @@ export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
 export interface IApi {
     get<T extends object>(uri: string): Promise<T>;
-
     post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
 
@@ -17,36 +16,29 @@ export interface IProduct {
     price: number | null;
 }
 
-export interface IBuyer {
+export interface ICustomer {
     payment: TPayment;
     email: string;
     phone: string;
     address: string;
 }
 
-export interface IErrorsValidate {
-    payment?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-}
-
+export type TErrorsValidate = Record<string, string>
 
 // Ответ сервера при получении списка товаров
-export interface IProductsResponse {
+export interface IFetchItemsResponse {
     items: IProduct[];
     total: number;
 }
 
 // Данные для отправки заказа на сервер
-export interface IOrderData extends IBuyer {
+export interface IOrderData extends ICustomer {
     items: string[];  // массив id товаров
     total: number;
 }
 
-
 // Ответ сервера при успешном оформлении заказа
-export interface IOrderResponse {
+export interface IPostOrderResponse {
     id: string;
     total: number;
 }
@@ -58,22 +50,12 @@ export interface IHeader {
 export interface IModal {
 }
 
-export interface IEmitResponse<T extends object> {
-    e: Event;
+export interface IEmitDefault<T extends object> {
     data: T;
+    event?: Event;
 }
 
-export interface IResponseDataId {
-    id: string;
-}
+export type TEmitProduct = IEmitDefault<IProduct>
 
-
-export interface IResponseDataOrder<T> {
-    address: string;
-    payment?: T;
-}
-
-export interface IResponseDataContacts {
-    phone: string;
-    email: string;
-}
+export type TEmitPartialUserData = IEmitDefault<Partial<ICustomer>>
+export type TEmitUserData = IEmitDefault<ICustomer>

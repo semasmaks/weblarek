@@ -1,7 +1,7 @@
 import {ModalView} from './ModalView.ts';
 import {EventEmitter} from '../base/Events.ts';
 import {ensureElement} from '../../utils/utils.ts';
-import {IOrderResponse} from '../../types';
+import {IPostOrderResponse} from '../../types';
 
 export class SuccessView extends ModalView {
     private readonly content: HTMLElement
@@ -21,7 +21,7 @@ export class SuccessView extends ModalView {
         })
     }
 
-    setStatus(res: IOrderResponse) {
+    setStatus(res: IPostOrderResponse) {
         this.description.textContent = `Списано ${res.total.toLocaleString('ru-RU')} синапсов`
 
     }

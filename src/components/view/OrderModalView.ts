@@ -1,7 +1,10 @@
 import {ModalView} from './ModalView.ts';
 import {EventEmitter} from '../base/Events.ts';
 import {ensureElement} from '../../utils/utils.ts';
-import {IEmitResponse, IResponseDataOrder, TPayment} from '../../types';
+import {
+    TEmitPartialUserData,
+    TPayment,
+} from '../../types';
 
 export class OrderModalView extends ModalView {
     private readonly content: HTMLFormElement
@@ -29,18 +32,16 @@ export class OrderModalView extends ModalView {
 
         this.cardPaymentButton.addEventListener('click', (e) => {
             e.preventDefault();
-            this.events.emit<IEmitResponse<IResponseDataOrder<TPayment>>>('order:input', {
-                e: e,
+            this.events.emit<TEmitPartialUserData>('order:input', {
                 data: {
                     address: this.addressInputElement.value,
                     payment: 'online',
-                },
+                }
             });
         })
         this.cashPaymentButton.addEventListener('click', (e) => {
             e.preventDefault();
-            this.events.emit('order:input', {
-                e: e,
+            this.events.emit<TEmitPartialUserData>('order:input', {
                 data: {
                     address: this.addressInputElement.value,
                     payment: 'cash',
@@ -49,11 +50,9 @@ export class OrderModalView extends ModalView {
         })
         this.addressInputElement.addEventListener('input', (e) => {
             e.preventDefault();
-            this.events.emit<IEmitResponse<IResponseDataOrder<TPayment>>>('order:input', {
-                e: e,
+            this.events.emit<TEmitPartialUserData>('order:input', {
                 data: {
                     address: this.addressInputElement.value,
-
                 },
             })
         })

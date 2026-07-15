@@ -1,18 +1,19 @@
 import {Component} from '../base/Component.ts';
 import {IModal} from '../../types';
 import {EventEmitter} from '../base/Events.ts';
+import {ensureElement} from '../../utils/utils.ts';
 
 export class ModalView extends Component<IModal> {
-    events: EventEmitter;
-    private contentSection: HTMLDivElement | null;
-    private closeButton: HTMLButtonElement | null;
+    protected events: EventEmitter
+    private readonly contentSection: HTMLElement;
+    private closeButton: HTMLButtonElement;
 
-    constructor(container: HTMLElement, events: EventEmitter) {
+    constructor(container: HTMLElement,
+                events: EventEmitter) {
         super(container);
-        this.contentSection = container.querySelector('.modal__content');
-        this.closeButton = container.querySelector('.modal__close');
-        this.events = events;
-
+        this.contentSection = ensureElement('.modal__content', this.container) as HTMLElement;
+        this.closeButton = ensureElement('.modal__close', this.container) as HTMLButtonElement;
+        this.events = events
         this.closeButton?.addEventListener('click', () => {
             this.events.emit('modal:close');
         })

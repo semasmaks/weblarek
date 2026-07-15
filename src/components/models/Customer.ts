@@ -1,4 +1,4 @@
-import {IBuyer, IErrorsValidate, TPayment} from '../../types';
+import {ICustomer, TErrorsValidate, TPayment} from '../../types';
 
 export class Customer {
     private payment: TPayment = '';
@@ -22,7 +22,7 @@ export class Customer {
         this.address = address;
     }
 
-    getData(): IBuyer {
+    getData(): ICustomer {
         return {
             payment: this.payment,
             email: this.email,
@@ -38,7 +38,7 @@ export class Customer {
         this.address = ''
     }
 
-    validate(): IErrorsValidate {
+    validate(): TErrorsValidate {
         const errors: Record<string, string> = {};
         if (!this.payment) {
             errors.payment = 'Не выбран способ оплаты';

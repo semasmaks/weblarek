@@ -1,4 +1,4 @@
-import {IProduct} from '../../types';
+import {IProduct, TEmitProduct} from '../../types';
 import {ModalView} from './ModalView.ts';
 import {EventEmitter} from '../base/Events.ts';
 import {ensureElement} from '../../utils/utils.ts';
@@ -46,9 +46,9 @@ export class BasketModalView extends ModalView {
                 priceElement.textContent = `${product.price} синапсов`;
             }
 
-            dellButton.dataset.action = 'basket:remove';
-            dellButton.addEventListener('click', (e) => {
-                this.events.emit('basket:upd', {e: e, data: {id: product.id}});
+            dellButton.addEventListener('click', () => {
+                this.events.emit<TEmitProduct>('basketDellBtn:click', {data: product});
+                this.events.emit('basket:upd');
             })
             this.itemsList.append(element);
         })
