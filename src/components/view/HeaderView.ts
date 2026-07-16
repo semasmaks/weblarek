@@ -1,27 +1,24 @@
 import {Component} from '../base/Component.ts';
-import {IHeader} from '../../types';
 import {EventEmitter} from '../base/Events.ts';
 import {ensureElement} from '../../utils/utils.ts';
+import {IHeaderRender} from '../../types';
 
-export class HeaderView extends Component<IHeader> {
-    private readonly basketCounterElement: HTMLElement;
-    private basketButtonElement: HTMLElement;
-    private events: EventEmitter
+export class HeaderView extends Component<IHeaderRender> {
+    private basketCounterElement: HTMLElement;
+    private basketButtonElement: HTMLButtonElement
 
-    constructor(container: HTMLElement, events: EventEmitter) {
+    constructor(container: HTMLElement,
+                private events: EventEmitter) {
         super(container);
-        this.basketCounterElement = ensureElement('.header__basket-counter', this.container);
-        this.basketButtonElement = ensureElement('.header__basket', this.container);
-        this.events = events;
+        this.basketCounterElement = ensureElement<HTMLElement>('.header__basket-counter', this.container)
+        this.basketButtonElement = ensureElement<HTMLButtonElement>('.header__basket', this.container)
 
         this.basketButtonElement.addEventListener('click', () => {
-            this.events.emit('basketModal:open')
+            this.events.emit('basketOpenBtn:click')
         })
     }
 
-    setBasketCounter(num: number) {
-        if (this.basketCounterElement) {
-            this.basketCounterElement.textContent = num.toString();
-        }
+    set basketCounter(value: number) {
+        this.basketCounterElement.textContent = String(value);
     }
 }

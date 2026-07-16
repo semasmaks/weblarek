@@ -1,25 +1,36 @@
 import {ICustomer, TErrorsValidate, TPayment} from '../../types';
+import {EventEmitter} from '../base/Events.ts';
 
-export class Customer {
-    private payment: TPayment = '';
+export class CustomerModel {
+    private payment: TPayment = null;
     private email: string = '';
     private phone: string = '';
     private address: string = '';
 
+    constructor(private events: EventEmitter) {}
+
     setPayment(payment: TPayment): void {
         this.payment = payment;
+        this.events.emit('userData:setPayment');
+        this.events.emit('order:updated')
     }
 
     setEmail(email: string): void {
         this.email = email;
+        this.events.emit('userData:setEmail');
+        this.events.emit('contacts:updated')
     }
 
     setPhone(phone: string): void {
         this.phone = phone;
+        this.events.emit('userData:setPhone');
+        this.events.emit('contacts:updated')
     }
 
     setAddress(address: string): void {
         this.address = address;
+        this.events.emit('userData:setAddress');
+        this.events.emit('order:updated')
     }
 
     getData(): ICustomer {
@@ -32,10 +43,11 @@ export class Customer {
     }
 
     resetData(): void {
-        this.payment = ''
+        this.payment = null
         this.email = ''
         this.phone = ''
         this.address = ''
+        this.events.emit('userData:reset');
     }
 
     validate(): TErrorsValidate {

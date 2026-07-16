@@ -1,8 +1,12 @@
 import {IProduct} from '../../types';
+import {EventEmitter} from '../base/Events.ts';
 
-export class Products {
+export class CatalogModel {
     private items: IProduct[] = [];
     private selectedItems: IProduct | null = null;
+
+    constructor(private events: EventEmitter) {
+    }
 
     setItems(items: IProduct[]): void {
         this.items = items;
@@ -10,6 +14,8 @@ export class Products {
 
     setSelectedItems(item: IProduct | null): void {
         this.selectedItems = item;
+        item ? this.events.emit('catalog:activeItemSet')
+             : this.events.emit('catalog:activeItemRemove')
     }
 
     getItemById(id: string): IProduct | null {

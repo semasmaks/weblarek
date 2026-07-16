@@ -1,145 +1,180 @@
 import './scss/styles.scss';
-import {Products} from './components/models/Products.ts';
+import {CatalogModel} from './components/models/CatalogModel.ts';
 import {cloneTemplate, ensureElement} from './utils/utils.ts';
-import {ModalView} from './components/view/ModalView.ts';
-import {CatalogView} from './components/view/CatalogView.ts';
-import {CardPreview} from './components/view/CardPreview.ts';
-import {AppApi} from './components/models/AppApi.ts';
+import {AppApi} from './components/api/AppApi.ts';
 import {Api} from './components/base/Api.ts';
 import {API_URL} from './utils/constants.ts';
 import {EventEmitter} from './components/base/Events.ts';
-import {Basket} from './components/models/Basket.ts';
-import {Customer} from './components/models/Customer.ts';
+import {BasketModel} from './components/models/BasketModel.ts';
+import {CustomerModel} from './components/models/CustomerModel.ts';
+import {ModalView} from './components/view/ModalView.ts';
+import {BasketView} from './components/view/BasketView.ts';
+import {CardPreview} from './components/view/CardPreview.ts';
+import {CatalogView} from './components/view/CatalogView.ts';
+import {CatalogCardNew} from './components/view/cards/CatalogCardNew.ts';
 import {HeaderView} from './components/view/HeaderView.ts';
-import {BasketModalView} from './components/view/BasketModalView.ts';
 import {
-    IEmitDefault,
-    IFetchItemsResponse,
+    IEmitID,
     IPostOrderResponse,
-    TEmitProduct,
-    TEmitPartialUserData, TEmitUserData,
+    TEmitCustomerData,
 } from './types';
-import {CatalogPresenter} from './components/presenters/CatalogPresenter.ts';
-import {
-    CardPreviewPresenter,
-} from './components/presenters/CardPreviewPresenter.ts';
-import {BasketPresenter} from './components/presenters/BasketPresenter.ts';
-import {HeaderPresenter} from './components/presenters/HeaderPresenter.ts';
-import {OrderModalView} from './components/view/OrderModalView.ts';
-import {OrderPresenter} from './components/presenters/OrderPresenter.ts';
+import {BasketCardNew} from './components/view/cards/BasketCard.ts';
+import {OrderView} from './components/view/OrderView.ts';
 import {ContactsView} from './components/view/ContactsView.ts';
-import {ContactsPresenter} from './components/presenters/ContactsPresenter.ts';
-import {ApiPresenter} from './components/presenters/ApiPresenter.ts';
-import {SuccessView} from './components/view/SuccesView.ts';
-import {SuccessPresenter} from './components/presenters/SuccessPresenter.ts';
+import {SuccessView} from './components/view/SuccessView.ts';
 
 // События
 const events = new EventEmitter()
 
 // Темплеты
-const basketContainerTemplate = cloneTemplate('#basket') as HTMLTemplateElement
-const basketItemTemplate = cloneTemplate('#card-basket') as HTMLTemplateElement
-const catalogItemTemplate = cloneTemplate('#card-catalog') as HTMLTemplateElement
-const cardPreviewTemplate = cloneTemplate('#card-preview') as HTMLTemplateElement
-const orderTemplate = cloneTemplate('#order') as HTMLTemplateElement
-const contactsTemplate = cloneTemplate('#contacts') as HTMLTemplateElement
-const successTemplate = cloneTemplate('#success') as HTMLTemplateElement
+const basketContainerTemplate = <HTMLTemplateElement>cloneTemplate('#basket')
+const basketItemTemplate = <HTMLTemplateElement>cloneTemplate('#card-basket')
+const catalogItemTemplate = <HTMLTemplateElement>cloneTemplate('#card-catalog')
+const cardPreviewTemplate = <HTMLTemplateElement>cloneTemplate('#card-preview')
+const orderTemplate = <HTMLTemplateElement>cloneTemplate('#order')
+const contactsTemplate = <HTMLTemplateElement>cloneTemplate('#contacts')
+const successTemplate = <HTMLTemplateElement>cloneTemplate('#success')
 
 // Элементы
-const headerElement = ensureElement('.header')
-const catalogElement = ensureElement('.gallery')
-const modalElement = ensureElement('#modal-container')
+const headerElement = ensureElement<HTMLElement>('.header')
+const catalogElement = ensureElement<HTMLElement>('.gallery')
+const modalElement = ensureElement<HTMLElement>('#modal-container')
 
 // Модели
-const catalog = new Products()
-const basket = new Basket()
-const customer = new Customer()
+const catalogModel = new CatalogModel(events)
+const basketModel = new BasketModel(events)
+const customerModel = new CustomerModel(events)
 
 // API
 const api = new Api(API_URL);
 const appApi = new AppApi(api)
-const apiPresenter = new ApiPresenter(appApi, events, basket, customer)
 
 // Представления
-const catalogView = new CatalogView(catalogElement, events, catalogItemTemplate)
+const catalogView = new CatalogView(catalogElement)
 const headerView = new HeaderView(headerElement, events)
+const modalView = new ModalView(modalElement, events)
+const cardPreview = new CardPreview(cardPreviewTemplate, events)
+const basketView = new BasketView(basketContainerTemplate, events)
+const orderView = new OrderView(orderTemplate, events)
+const contactsView = new ContactsView(contactsTemplate, events)
+const successView = new SuccessView(successTemplate, events)
 
-// Модалки
-const modalView = new ModalView(modalElement, events) // Создаём чтобы повесить обработчик закрытия на 1 элемент, а не на 3
-const basketModalView = new BasketModalView(modalElement, events, basketContainerTemplate, basketItemTemplate)
-const itemPreviewModal = new CardPreview(modalElement, events, cardPreviewTemplate)
-const orderModal = new OrderModalView(modalElement, events, orderTemplate)
-const contactsModal = new ContactsView(modalElement, events, contactsTemplate)
-const successModal = new SuccessView(modalElement, events, successTemplate)
 
-// Презентеры
-const catalogPresenter = new CatalogPresenter(catalog, catalogView);
-const cardPreviewPresenter = new CardPreviewPresenter(catalog, basket, itemPreviewModal)
-const basketPresenter = new BasketPresenter(basket, basketModalView)
-const headerPresenter = new HeaderPresenter(basket, headerView)
-const orderPresenter = new OrderPresenter(customer, orderModal)
-const contactsPresenter = new ContactsPresenter(customer, contactsModal)
-const successPresenter = new SuccessPresenter(basket, events, successModal)
+async function fillCatalog(): Promise<void> {
+    try {
+        const fetchedItems = await appApi.getProducts()
+        catalogModel.setItems(fetchedItems.items)
+        const cards = catalogModel.getAllItems().map(item => {
+            return new CatalogCardNew(catalogItemTemplate, events).render(item)
+        })
+        catalogView.render({items: cards})
+    } catch (e) {
+        console.log(e)
+    }
+}
 
-// Слушатели
-// При успешном получении продуктов
-events.on('appApi:getItems', (res: IFetchItemsResponse) => {
-    catalogPresenter.renderCatalog(res.items)
+events.on('catalogCard:click', (res: IEmitID) => {
+    // console.log(`клик по карточке: ${res.id}`)
+    catalogModel.setSelectedItems(catalogModel.getItemById(res.id))
 })
-// При клике на карточку
-events.on('catalogCard:click', (res: TEmitProduct) => {
-    cardPreviewPresenter.openPreview(res)
+events.on('catalog:activeItemSet', () => {
+    // console.log('выбрана карточка')
+    const card = catalogModel.getSelectedItem()
+    if (card) {
+        const isInBasket = basketModel.hasItem(card.id)
+        modalView.render({content: cardPreview.render({...card, isInBasket})})
+    }
 })
-// Закрытие всех модальных окон и сброс выбранной карточки
+events.on('basketOpenBtn:click', () => {
+    // console.log('открытие корзины')
+    modalView.render({content: basketView.render()})
+})
 events.on('modal:close', () => {
-    modalView.hideModal();
-    cardPreviewPresenter.onClose()
+    // console.log('закрытие модалки')
+    modalView.closeModal()
+    catalogModel.setSelectedItems(null)
 })
-// При нажатии на кнопку "Купить"/"Удалить из корзины" в модальном окне
-events.on('addToCardBtn:click', (res: TEmitProduct) => {
-    cardPreviewPresenter.onActionBtnClick(res);
-    basketPresenter.updateBasket()
-    headerPresenter.updateBasketCounter()
+events.on('previewActinBtn:click', (res: IEmitID) => {
+    // console.log('нажатие на кнопку покупки')
+    const item = catalogModel.getItemById(res.id)
+    basketModel.hasItem(res.id) ? basketModel.removeItem(item)
+                                : basketModel.addItem(item)
 })
-// При очистке корзины
-events.on('basket:clear', () => {
-    headerPresenter.updateBasketCounter()
+events.on('basket:update', () => {
+    // console.log('содержимое корзины изменилось')
+    const cards = basketModel.getItems().map((item, index) => {
+        return new BasketCardNew(basketItemTemplate, events).render({
+            ...item,
+            index,
+        })
+    })
+    basketView.render({
+        items: cards,
+        totalPrice: basketModel.getTotalPrice(),
+        buttonIsDisabled: !basketModel.getItemsLength(),
+    })
+    headerView.render({basketCounter: basketModel.getItemsLength()})
 })
-// При нажатии на открытие корзины
-events.on('basketModal:open', () => {
-    basketPresenter.showBasket()
+events.on('basketItem:delete', (res: IEmitID) => {
+    // console.log(`удаление товара: ${res.id}`)
+    basketModel.removeItem(catalogModel.getItemById(res.id))
 })
-// При нажатии на "Удалить" в корзине
-events.on('basketDellBtn:click', (res: TEmitProduct) => {
-    basketPresenter.deleteItem(res)
-    headerPresenter.updateBasketCounter()
+events.on('basket:goToOrder', () => {
+    // console.log('открытие окна оформления(шаг 1)')
+    modalView.render({content: orderView.render()})
 })
-// При вводе адреса в поле заказа или выборе способа оплаты
-events.on('order:input', (res: TEmitPartialUserData) => {
-    orderPresenter.onInput(res)
+events.on('order:input', (res: TEmitCustomerData<'address'>) => {
+    customerModel.setAddress(res.address)
 })
-// При нажатии на "Оформить" в корзине
-events.on('order:open', () => {
-    orderPresenter.showModal()
+events.on('order:setPayment', (res: TEmitCustomerData<'payment'>) => {
+    customerModel.setPayment(res.payment === customerModel.getData().payment ? null
+                                                                   : res.payment)
 })
-// При нажатии на "Далее" в форме заказа
+events.on('order:updated', () => {
+    const errors = customerModel.validate()
+    const msg = ['address', 'payment']
+        .map(field => errors[field])
+        .find(error => error !== undefined) || ''
+    orderView.render({
+        payment: customerModel.getData().payment,
+        error: msg,
+    })
+})
 events.on('order:submit', () => {
-    contactsPresenter.showModal()
+    // console.log('открытие окна оформления(шаг 2)')
+    modalView.render({content: contactsView.render()})
 })
-// При вводе в любое поле в форме контактов
-events.on('contacts:input', (res: TEmitUserData) => {
-    contactsPresenter.onInput(res)
+events.on('contacts:input', (res: TEmitCustomerData<'email' | 'phone'>) => {
+    customerModel.setEmail(res.email ?? '')
+    customerModel.setPhone(res.phone ?? '')
 })
-// При нажатии на "Оформить" в форме контактов
-events.on('contacts:submit', () => {
-    apiPresenter.postOrder()
+events.on('contacts:updated', () => {
+    const errors = customerModel.validate()
+    const msg = ['email', 'phone']
+        .map(field => errors[field])
+        .find(error => error !== undefined) || ''
+    contactsView.render({error: msg})
 })
-// При Успешном ответе от сервера
-events.on('appApi:orderPosted', (res: IEmitDefault<IPostOrderResponse>) => {
-    successPresenter.showSuccessWindow(res)
+events.on('contacts:submit', async () => {
+    const order = {
+        ...customerModel.getData(),
+        items: basketModel.getItems().map(item => item.id),
+        total: basketModel.getTotalPrice(),
+    }
+    contactsView.render({error: 'Данные отправляются на сервер'})
+    try {
+        const postOrderResponse = await appApi.postOrder(order)
+        events.emit<IPostOrderResponse>('order:posted', postOrderResponse)
+    } catch (e) {
+        console.log(e)
+    }
+})
+events.on('order:posted', (res: IPostOrderResponse) => {
+    modalView.render({content: successView.render(res)})
+    basketModel.clear()
 })
 
 // Старт работы приложения
 document.addEventListener('DOMContentLoaded', async () => {
-    apiPresenter.getItems()
+    await fillCatalog()
 });

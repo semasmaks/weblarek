@@ -5,7 +5,7 @@ export interface IApi {
     post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
 
-export type TPayment = 'online' | 'cash' | ''
+export type TPayment = 'online' | 'cash' | null
 
 export interface IProduct {
     id: string;
@@ -44,17 +44,49 @@ export interface IPostOrderResponse {
 }
 
 //Типы компонентов
-export interface IHeader {
+export interface IHeaderRender {
+    basketCounter: number;
 }
 
-export interface IModal {
+export interface ICatalogRender {
+    items: HTMLElement[];
 }
 
-export interface IEmitDefault<T extends object> {
-    data: T;
+export interface ICardDataRender extends IProduct{
+    isInBasket: boolean;
+    index: number;
+}
+
+export interface IModalRender {
+    content: HTMLElement;
+}
+
+export interface IBasketModalRender {
+    items: HTMLElement[];
+    totalPrice: number;
+    buttonIsDisabled: boolean;
+}
+
+export interface IOrderRender {
+    payment: TPayment;
+    error: string;
+}
+
+export interface IContactsRender {
+    error: string;
+}
+
+export interface ISuccessRender {
+    total: number;
+}
+
+export interface IEmitID {
+    id: string;
     event?: Event;
 }
 
-export type TEmitProduct = IEmitDefault<IProduct>
-export type TEmitPartialUserData = IEmitDefault<Partial<ICustomer>>
-export type TEmitUserData = IEmitDefault<ICustomer>
+export type TEmitCustomerData<T extends keyof ICustomer = never> =
+   T extends never
+    ? Partial<ICustomer>
+    : Partial<ICustomer> & Required<Pick<ICustomer, T>>
+

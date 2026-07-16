@@ -1,7 +1,10 @@
 import {IProduct} from '../../types';
+import {EventEmitter} from '../base/Events.ts';
 
-export class Basket {
+export class BasketModel {
     private items: IProduct[] = []
+
+    constructor(private events: EventEmitter) {}
 
     getItems(): IProduct[] {
         return this.items;
@@ -9,6 +12,7 @@ export class Basket {
 
     addItem(item: IProduct | null): void {
         if (item) this.items.push(item);
+        this.events.emit('basket:update');
     }
 
     removeItem(item: IProduct | null): void {
@@ -16,10 +20,13 @@ export class Basket {
             const index = this.items.indexOf(item);
             if (index !== -1) this.items.splice(index, 1);
         }
+        this.events.emit('basket:update')
     }
 
     clear(): void {
         this.items = [];
+        this.events.emit('basket:clear')
+        this.events.emit('basket:update')
     }
 
     getTotalPrice(): number {
