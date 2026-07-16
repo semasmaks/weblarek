@@ -58,8 +58,8 @@ const successView = new SuccessView(successTemplate, events)
 function resetAll() {
     customerModel.resetData()
     basketModel.clear()
-    orderView.render({resetForm: true})
-    contactsView.render({resetForm: true})
+    orderView.resetForm()
+    contactsView.resetForm()
 }
 
 async function fillCatalog(): Promise<void> {

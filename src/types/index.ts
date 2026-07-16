@@ -70,12 +70,10 @@ export interface IBasketModalRender {
 export interface IOrderRender {
     payment: TPayment;
     error: string;
-    resetForm: boolean;
 }
 
 export interface IContactsRender {
     error: string;
-    resetForm: boolean;
 }
 
 export interface ISuccessRender {

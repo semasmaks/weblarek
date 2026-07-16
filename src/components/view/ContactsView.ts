@@ -34,11 +34,9 @@ export class ContactsView extends Component<IContactsRender> {
         this.submitButton.disabled = !!msg
     }
 
-    set resetForm(reset: boolean) {
-        if (reset) {
-            this.emailInput.value = '';
-            this.phoneInput.value = '';
-            this.errorElement.textContent = '';
-        }
+    resetForm() {
+        this.emailInput.value = '';
+        this.phoneInput.value = '';
+        this.errorElement.textContent = '';
     }
 }
