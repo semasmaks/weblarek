@@ -13,11 +13,7 @@ import {CardPreview} from './components/view/CardPreview.ts';
 import {CatalogView} from './components/view/CatalogView.ts';
 import {CatalogCardNew} from './components/view/cards/CatalogCardNew.ts';
 import {HeaderView} from './components/view/HeaderView.ts';
-import {
-    IEmitID,
-    IPostOrderResponse,
-    TEmitCustomerData,
-} from './types';
+import {IEmitID, IPostOrderResponse, TEmitCustomerData} from './types';
 import {BasketCardNew} from './components/view/cards/BasketCard.ts';
 import {OrderView} from './components/view/OrderView.ts';
 import {ContactsView} from './components/view/ContactsView.ts';
@@ -59,6 +55,12 @@ const orderView = new OrderView(orderTemplate, events)
 const contactsView = new ContactsView(contactsTemplate, events)
 const successView = new SuccessView(successTemplate, events)
 
+function resetAll() {
+    customerModel.resetData()
+    basketModel.clear()
+    orderView.render({resetForm: true})
+    contactsView.render({resetForm: true})
+}
 
 async function fillCatalog(): Promise<void> {
     try {
@@ -127,8 +129,9 @@ events.on('order:input', (res: TEmitCustomerData<'address'>) => {
     customerModel.setAddress(res.address)
 })
 events.on('order:setPayment', (res: TEmitCustomerData<'payment'>) => {
-    customerModel.setPayment(res.payment === customerModel.getData().payment ? null
-                                                                   : res.payment)
+    customerModel.setPayment(res.payment === customerModel.getData().payment
+                             ? null
+                             : res.payment)
 })
 events.on('order:updated', () => {
     const errors = customerModel.validate()
@@ -171,7 +174,7 @@ events.on('contacts:submit', async () => {
 })
 events.on('order:posted', (res: IPostOrderResponse) => {
     modalView.render({content: successView.render(res)})
-    basketModel.clear()
+    resetAll()
 })
 
 // Старт работы приложения

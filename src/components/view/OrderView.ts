@@ -57,4 +57,13 @@ export class OrderView extends Component<IOrderRender> {
         this.errorElement.textContent = msg;
         this.submitButton.disabled = !!msg
     }
+
+    set resetForm(reset: boolean) {
+        if (reset) {
+            this.addressInputElement.value = '';
+            this.cardPaymentButton.classList.remove('button_alt-active');
+            this.cashPaymentButton.classList.remove('button_alt-active');
+            this.submitButton.disabled = true;
+        }
+    }
 }
