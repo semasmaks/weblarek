@@ -14,8 +14,7 @@ export class CatalogModel {
 
     setSelectedItems(item: IProduct | null): void {
         this.selectedItems = item;
-        item ? this.events.emit('catalog:activeItemSet')
-             : this.events.emit('catalog:activeItemRemove')
+        this.events.emit('catalog:activeItemSet')
     }
 
     getItemById(id: string): IProduct | null {

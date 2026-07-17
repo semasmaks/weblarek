@@ -25,14 +25,13 @@ export class BasketModel {
 
     clear(): void {
         this.items = [];
-        this.events.emit('basket:clear')
         this.events.emit('basket:update')
     }
 
     getTotalPrice(): number {
-        return this.items.reduce((acc: number, cur: IProduct): number => {
-            if (cur.price) {
-                acc += +cur.price
+        return this.items.reduce((acc: number, item: IProduct): number => {
+            if (item.price) {
+                acc += +item.price
             }
             return acc
         }, 0)

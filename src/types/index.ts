@@ -53,27 +53,28 @@ export interface ICatalogRender {
 }
 
 export interface ICardDataRender extends IProduct{
-    isInBasket: boolean;
     index: number;
+    buttonIsDisabled: boolean;
+    buttonText: string;
 }
 
 export interface IModalRender {
     content: HTMLElement;
 }
 
-export interface IBasketModalRender {
+export interface IBasketRender {
     items: HTMLElement[];
     totalPrice: number;
     buttonIsDisabled: boolean;
 }
 
-export interface IOrderRender {
+export interface IFormRender {
     payment: TPayment;
+    address: string;
+    email: string;
+    phone: string;
     error: string;
-}
-
-export interface IContactsRender {
-    error: string;
+    buttonIsDisabled: boolean;
 }
 
 export interface ISuccessRender {

@@ -1,20 +1,16 @@
-import {Component} from '../base/Component.ts';
-import {EventEmitter} from '../base/Events.ts';
-import {ensureElement} from '../../utils/utils.ts';
-import {IOrderRender, TEmitCustomerData, TPayment} from '../../types';
+import {EventEmitter} from '../../base/Events.ts';
+import {ensureElement} from '../../../utils/utils.ts';
+import {TEmitCustomerData, TPayment} from '../../../types';
+import {Form} from './Form.ts';
 
-export class OrderView extends Component<IOrderRender> {
+export class OrderView extends Form {
     private cardPaymentButton: HTMLButtonElement
     private cashPaymentButton: HTMLButtonElement
     private addressInputElement: HTMLInputElement;
-    private submitButton: HTMLButtonElement;
-    private errorElement: HTMLElement;
 
     constructor(container: HTMLElement,
                 private events: EventEmitter) {
         super(container);
-        this.submitButton = ensureElement<HTMLButtonElement>('.order__button', this.container)
-        this.errorElement = ensureElement<HTMLElement>('.form__errors', this.container)
         this.addressInputElement = ensureElement<HTMLInputElement>('input[name="address"]', this.container)
         this.cardPaymentButton = ensureElement<HTMLButtonElement>('.button_alt[name="card"]', this.container)
         this.cashPaymentButton = ensureElement<HTMLButtonElement>('.button_alt[name="cash"]', this.container)
@@ -53,15 +49,7 @@ export class OrderView extends Component<IOrderRender> {
         }
     }
 
-    set error(msg: string) {
-        this.errorElement.textContent = msg;
-        this.submitButton.disabled = !!msg
-    }
-
-    resetForm() {
-        this.addressInputElement.value = '';
-        this.cardPaymentButton.classList.remove('button_alt-active');
-        this.cashPaymentButton.classList.remove('button_alt-active');
-        this.submitButton.disabled = true;
+    set address(address: string) {
+        this.addressInputElement.value = address;
     }
 }

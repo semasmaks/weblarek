@@ -11,26 +11,22 @@ export class CustomerModel {
 
     setPayment(payment: TPayment): void {
         this.payment = payment;
-        this.events.emit('userData:setPayment');
-        this.events.emit('order:updated')
+        this.events.emit('customer:updated')
     }
 
     setEmail(email: string): void {
         this.email = email;
-        this.events.emit('userData:setEmail');
-        this.events.emit('contacts:updated')
+        this.events.emit('customer:updated')
     }
 
     setPhone(phone: string): void {
         this.phone = phone;
-        this.events.emit('userData:setPhone');
-        this.events.emit('contacts:updated')
+        this.events.emit('customer:updated')
     }
 
     setAddress(address: string): void {
         this.address = address;
-        this.events.emit('userData:setAddress');
-        this.events.emit('order:updated')
+        this.events.emit('customer:updated')
     }
 
     getData(): ICustomer {
@@ -47,7 +43,7 @@ export class CustomerModel {
         this.email = ''
         this.phone = ''
         this.address = ''
-        this.events.emit('userData:reset');
+        this.events.emit('customer:reset');
     }
 
     validate(): TErrorsValidate {

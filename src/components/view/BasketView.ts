@@ -1,9 +1,9 @@
 import {Component} from '../base/Component.ts';
 import {EventEmitter} from '../base/Events.ts';
 import {ensureElement} from '../../utils/utils.ts';
-import {IBasketModalRender} from '../../types';
+import {IBasketRender} from '../../types';
 
-export class BasketView extends Component<IBasketModalRender> {
+export class BasketView extends Component<IBasketRender> {
     private basketList: HTMLElement;
     private totalPriceElement: HTMLElement;
     private orderButton: HTMLButtonElement;

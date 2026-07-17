@@ -26,8 +26,11 @@ export class ModalView extends Component<IModalRender> {
         this.contentElement.replaceChildren();
     }
 
-    set content(content: HTMLElement) {
+    showModal(): void {
         this.container.classList.add('modal_active');
+    }
+
+    set content(content: HTMLElement) {
         this.contentElement.replaceChildren(content);
     }
 }
