@@ -1,6 +1,6 @@
 import {EventEmitter} from '../../base/Events.ts';
 import {ensureElement} from '../../../utils/utils.ts';
-import {TEmitCustomerData, TPayment} from '../../../types';
+import {ICustomer, TPayment} from '../../../types';
 import {Form} from './Form.ts';
 
 export class OrderView extends Form {
@@ -17,18 +17,18 @@ export class OrderView extends Form {
 
         this.addressInputElement.addEventListener('input', (e) => {
             e.preventDefault();
-            this.events.emit<TEmitCustomerData<'address'>>('order:input', {address: this.addressInputElement.value})
+            this.events.emit<Pick<ICustomer, 'address'>>('form:input', {address: this.addressInputElement.value})
         })
         this.cardPaymentButton.addEventListener('click', () => {
-            this.events.emit<TEmitCustomerData<'payment'>>('order:setPayment', {payment: 'online'})
+            this.events.emit<Pick<ICustomer, 'payment'>>('form:input', {payment: 'online'})
         })
         this.cashPaymentButton.addEventListener('click', () => {
-            this.events.emit<TEmitCustomerData<'payment'>>('order:setPayment', {payment: 'cash'})
+            this.events.emit<Pick<ICustomer, 'payment'>>('form:input', {payment: 'cash'})
         })
 
         this.container.addEventListener('submit', (e) => {
             e.preventDefault()
-            this.events.emit('order:submit')
+            this.events.emit('orderForm:submit')
         })
     }
 

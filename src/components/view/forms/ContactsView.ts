@@ -1,6 +1,6 @@
 import {EventEmitter} from '../../base/Events.ts';
 import {ensureElement} from '../../../utils/utils.ts';
-import {TEmitCustomerData} from '../../../types';
+import {ICustomer} from '../../../types';
 import {Form} from './Form.ts';
 
 export class ContactsView extends Form {
@@ -14,14 +14,14 @@ export class ContactsView extends Form {
         this.phoneInput = ensureElement<HTMLInputElement>('input[name="phone"]', this.container);
 
         this.container.addEventListener('input', () => {
-            this.events.emit<TEmitCustomerData<'email' | 'phone'>>('contacts:input', {
+            this.events.emit<Pick<ICustomer, 'email' | 'phone'>>('form:input', {
                 email: this.emailInput.value,
                 phone: this.phoneInput.value,
             })
         })
         this.container.addEventListener('submit', (e) => {
             e.preventDefault();
-            this.events.emit('contacts:submit')
+            this.events.emit('contactsForm:submit')
         })
     }
 

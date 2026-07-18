@@ -1,7 +1,8 @@
-import {EventEmitter} from '../../base/Events.ts';
 import {ensureElement} from '../../../utils/utils.ts';
 import {Card} from './Card.ts';
-import {categoryMap, CDN_URL} from '../../../utils/constants.ts';
+import {categoryMap} from '../../../utils/constants.ts';
+import {EventEmitter} from '../../base/Events.ts';
+import {IProduct} from '../../../types';
 
 export class CardPreview extends Card {
     private descriptionElement: HTMLElement;
@@ -16,20 +17,18 @@ export class CardPreview extends Card {
         this.buttonElement = ensureElement<HTMLButtonElement>('.card__button', this.container)
         this.categoryElement = ensureElement<HTMLElement>('.card__category', this.container)
         this.imgElement = ensureElement<HTMLImageElement>('.card__image', this.container)
-        this.buttonElement.addEventListener('click', () => {
-            this.events.emit('previewActinBtn:click')
-        })
+        this.buttonElement.addEventListener('click', () => this.events.emit<Pick<IProduct, 'id'>>('previewActinBtn:click'))
     }
 
     set description(description: string) {
         this.descriptionElement.textContent = description
     }
 
-    set buttonText (text: string) {
+    set buttonText(text: string) {
         this.buttonElement.textContent = text;
     }
 
-    set buttonIsDisabled (isDisabled: boolean) {
+    set buttonIsDisabled(isDisabled: boolean) {
         this.buttonElement.disabled = isDisabled;
     }
 
@@ -40,6 +39,6 @@ export class CardPreview extends Card {
     }
 
     set image(src: string) {
-        this.setImage(this.imgElement, `${CDN_URL}${src}`)
+        this.setImage(this.imgElement, src)
     }
 }

@@ -1,23 +1,17 @@
 import {Card} from './Card.ts';
-import {EventEmitter} from '../../base/Events.ts';
 import {ensureElement} from '../../../utils/utils.ts';
-import {categoryMap, CDN_URL} from '../../../utils/constants.ts';
+import {categoryMap} from '../../../utils/constants.ts';
 
 export class CatalogCard extends Card {
     private categoryElement: HTMLElement;
     private readonly imgElement: HTMLImageElement;
 
     constructor(container: HTMLElement,
-                private events: EventEmitter) {
+                onClick: () => void,) {
         super(container);
         this.categoryElement = ensureElement<HTMLElement>('.card__category', this.container)
         this.imgElement = ensureElement<HTMLImageElement>('.card__image', this.container)
-    }
-
-    set id(id: string) {
-        this.container.addEventListener('click', () => {
-            this.events.emit('catalogCard:click', {id: id})
-        })
+        this.container.addEventListener('click', onClick)
     }
 
     set category(category: string) {
@@ -27,6 +21,6 @@ export class CatalogCard extends Card {
     }
 
     set image(src: string) {
-        this.setImage(this.imgElement, `${CDN_URL}${src}`)
+        this.setImage(this.imgElement, src)
     }
 }

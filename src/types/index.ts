@@ -56,6 +56,7 @@ export interface ICardDataRender extends IProduct{
     index: number;
     buttonIsDisabled: boolean;
     buttonText: string;
+    onClick: () => void;
 }
 
 export interface IModalRender {
@@ -80,14 +81,3 @@ export interface IFormRender {
 export interface ISuccessRender {
     total: number;
 }
-
-export interface IEmitID {
-    id: string;
-    event?: Event;
-}
-
-export type TEmitCustomerData<T extends keyof ICustomer = never> =
-   T extends never
-    ? Partial<ICustomer>
-    : Partial<ICustomer> & Required<Pick<ICustomer, T>>
-

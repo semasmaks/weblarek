@@ -14,7 +14,7 @@ export class HeaderView extends Component<IHeaderRender> {
         this.basketButtonElement = ensureElement<HTMLButtonElement>('.header__basket', this.container)
 
         this.basketButtonElement.addEventListener('click', () => {
-            this.events.emit('basketOpenBtn:click')
+            this.events.emit('basketBtn:click')
         })
     }
 

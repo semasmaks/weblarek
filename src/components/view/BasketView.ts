@@ -15,7 +15,7 @@ export class BasketView extends Component<IBasketRender> {
         this.totalPriceElement = ensureElement<HTMLElement>('.basket__price', this.container)
         this.orderButton = ensureElement<HTMLButtonElement>('.basket__button', this.container)
         this.orderButton.addEventListener('click', () => {
-            this.events.emit('basket:goToOrder')
+            this.events.emit('basketSuccessBtn:click')
         })
     }
 
