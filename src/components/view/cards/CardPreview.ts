@@ -2,7 +2,6 @@ import {ensureElement} from '../../../utils/utils.ts';
 import {Card} from './Card.ts';
 import {categoryMap} from '../../../utils/constants.ts';
 import {EventEmitter} from '../../base/Events.ts';
-import {IProduct} from '../../../types';
 
 export class CardPreview extends Card {
     private descriptionElement: HTMLElement;
@@ -17,7 +16,7 @@ export class CardPreview extends Card {
         this.buttonElement = ensureElement<HTMLButtonElement>('.card__button', this.container)
         this.categoryElement = ensureElement<HTMLElement>('.card__category', this.container)
         this.imgElement = ensureElement<HTMLImageElement>('.card__image', this.container)
-        this.buttonElement.addEventListener('click', () => this.events.emit<Pick<IProduct, 'id'>>('previewActinBtn:click'))
+        this.buttonElement.addEventListener('click', () => this.events.emit('previewActionBtn:click'))
     }
 
     set description(description: string) {

@@ -10,6 +10,7 @@ export class CatalogModel {
 
     setItems(items: IProduct[]): void {
         this.items = items;
+        this.events.emit('catalog:changed')
     }
 
     setSelectedItems(item: IProduct | null): void {

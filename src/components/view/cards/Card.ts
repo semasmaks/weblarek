@@ -13,8 +13,8 @@ export class Card extends Component<ICardDataRender> {
     }
 
     set price(price: number | null) {
-        this.priceElement.textContent = price ? `${price} синапсов`
-                                              : 'Бесценно'
+        this.priceElement.textContent = price !== null ? `${price} синапсов`
+                                                       : 'Бесценно'
     }
 
     set title(title: string) {

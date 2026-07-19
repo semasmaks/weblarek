@@ -63,19 +63,21 @@ async function fillCatalog(): Promise<void> {
     try {
         const fetchedItems = await appApi.getProducts()
         catalogModel.setItems(fetchedItems.items)
-        const cards = catalogModel.getAllItems().map(item => {
-            return new CatalogCard(cloneTemplate<HTMLElement>('#card-catalog'),
-                () => events.emit<Pick<IProduct, 'id'>>('catalogCard:click', {id: item.id})).render({
-                ...item,
-                image: CDN_URL + item.image,
-            })
-        })
-        catalogView.render({items: cards})
     } catch (e) {
         console.log(e)
     }
 }
 
+events.on('catalog:changed', () => {
+    const cards = catalogModel.getAllItems().map(item => {
+        return new CatalogCard(cloneTemplate<HTMLElement>('#card-catalog'),
+            () => events.emit<Pick<IProduct, 'id'>>('catalogCard:click', {id: item.id})).render({
+            ...item,
+            image: CDN_URL + item.image,
+        })
+    })
+    catalogView.render({items: cards})
+})
 events.on('catalogCard:click', (res: Pick<IProduct, 'id'>) => {
     catalogModel.setSelectedItems(catalogModel.getItemById(res.id))
 })
@@ -106,7 +108,7 @@ events.on('modal:close', () => {
     modalView.closeModal()
     catalogModel.setSelectedItems(null)
 })
-events.on('previewActinBtn:click', () => {
+events.on('previewActionBtn:click', () => {
     const item = catalogModel.getSelectedItem()
     if (item) {
         basketModel.hasItem(item.id) ? basketModel.removeItem(item)
@@ -135,12 +137,12 @@ events.on('basketSuccessBtn:click', () => {
     modalView.render({content: orderView.render()})
 })
 events.on('form:input', (res: Partial<ICustomer>) => {
-    if (res.payment) customerModel.setPayment(res.payment === customerModel.getData().payment
-                                              ? null
-                                              : res.payment)
-    if (res.address) customerModel.setAddress(res.address)
-    if (res.phone) customerModel.setPhone(res.phone)
-    if (res.email) customerModel.setEmail(res.email)
+    if (res.payment !== undefined) customerModel.setPayment(res.payment === customerModel.getData().payment
+                                                            ? null
+                                                            : res.payment)
+    if (res.address !== undefined) customerModel.setAddress(res.address)
+    if (res.phone !== undefined) customerModel.setPhone(res.phone)
+    if (res.email !== undefined) customerModel.setEmail(res.email)
 })
 events.on('customer:updated', () => {
     const errors = customerModel.validate()
